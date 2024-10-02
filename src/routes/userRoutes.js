@@ -54,4 +54,12 @@ router.post('/contacto', (req, res) => {
   response.success(req, res, 201, 'Registro Exitoso');
 });
 
+// Ruta para obtener contactos
+router.get('/get-contacto', (req, res) => {
+
+  // Respuesta exitosa
+  req.body = contacto;
+  response.success(req, res, 201, "exitoso");
+});
+
 module.exports = router;
