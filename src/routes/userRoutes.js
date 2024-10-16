@@ -9,9 +9,9 @@ const Asistencia = require('../models/asistencia');
 
 // Simular una base de datos en memoria
 const users = [];
-let newUser = new User(users.length + 1, "Pepito", "pepite@test.com", "555555", "bogota", "123456", "123");
+let newUser = new User(users.length + 1, "Pepito", "pepite@test.com");
 users.push(newUser);
-newUser = new User(users.length + 1, "Tester", "tester@test.com", "5556666", "soacha", "112233", "456");
+newUser = new User(users.length + 1, "Tester", "tester@test.com");
 users.push(newUser);
 
 const contactos = [];
