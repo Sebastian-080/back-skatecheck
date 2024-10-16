@@ -5,7 +5,7 @@ exports.success = function(req, res, status, message) {
         error: false,
         status: status,
         msg: message,
-        body: req.body
+        body: res.body
     });
 };
 

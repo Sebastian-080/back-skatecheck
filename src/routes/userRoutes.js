@@ -4,10 +4,27 @@ const router = express.Router();
 const User = require('../models/user');
 const response = require('../util/response'); // Importamos el manejador de respuestas
 const Contacto = require('../models/contacto');
+const Evento = require('../models/evento');
+const Asistencia = require('../models/asistencia');
 
 // Simular una base de datos en memoria
 const users = [];
-const contacto = [];
+let newUser = new User(users.length + 1, "Pepito", "pepite@test.com", "555555", "bogota", "123456", "123");
+users.push(newUser);
+newUser = new User(users.length + 1, "Tester", "tester@test.com", "5556666", "soacha", "112233", "456");
+users.push(newUser);
+
+const contactos = [];
+
+const eventos = [];
+let newEvento = new Evento(eventos.length + 1, "Rock al Parque");
+eventos.push(newEvento);
+newEvento = new Evento(eventos.length + 1, "Salsa al Parque");
+eventos.push(newEvento);
+newEvento = new Evento(eventos.length + 1, "Hip Hop al Parque");
+eventos.push(newEvento);
+
+const asistencias = [];
 
 // Ruta para agregar un nuevo usuario
 router.post('/user/register', (req, res) => {
@@ -18,7 +35,7 @@ router.post('/user/register', (req, res) => {
     return response.error(req, res, 400, 'Todos los campos son obligatorios');
   }
 
-  const newUser = new User(users.length + 1, nombre, correo);
+  const newUser = new User(users.length + 1, nombre, correo, telefono, direccion, usuario, pass);
   users.push(newUser);
 
   // Respuesta exitosa
@@ -39,27 +56,67 @@ router.post('/user/login', (req, res) => {
 });
 
 // Ruta para loguear un usuario
-router.post('/contacto', (req, res) => {
-  const { nombre, correo, descripcion } = req.body;
+router.post('/set-contacto', (req, res) => {
+  const { usuario, correo, descripcion } = req.body;
 
   // Validación de los campos
-  if (!nombre || !correo || !descripcion) {
+  if (!usuario || !correo || !descripcion) {
     return response.error(req, res, 400, 'Todos los campos son obligatorios');
   }
 
-  const newContacto = new Contacto(contacto.length + 1, nombre, correo, descripcion);
-  contacto.push(newContacto);
+  const newContacto = new Contacto(contactos.length + 1, usuario, correo, descripcion);
+  contactos.push(newContacto);
 
   // Respuesta exitosa
-  response.success(req, res, 201, 'Registro Exitoso');
+  response.success(req, res, 201, 'Exitoso');
 });
 
-// Ruta para obtener contactos
+// Ruta para loguear un usuario
 router.get('/get-contacto', (req, res) => {
 
   // Respuesta exitosa
-  req.body = contacto;
-  response.success(req, res, 201, "exitoso");
+  res.body = contactos;
+  response.success(req, res, 201, 'Exitoso');
+});
+
+// Ruta para loguear un usuario
+router.get('/evento/all', (req, res) => {
+
+  // Respuesta exitosa
+  res.body = eventos;
+  response.success(req, res, 201, 'Exitoso');
+});
+
+// Ruta para loguear un usuario
+router.get('/user/all', (req, res) => {
+
+  // Respuesta exitosa
+  res.body = users;
+  response.success(req, res, 201, 'Exitoso');
+});
+
+// Ruta para loguear un usuario
+router.get('/evento/asistencia/all', (req, res) => {
+
+  // Respuesta exitosa
+  res.body = asistencias;
+  response.success(req, res, 201, 'Exitoso');
+});
+
+// Ruta para loguear un usuario
+router.post('/evento/asistencia/create', (req, res) => {
+  const { evento, usuario } = req.body;
+
+  // Validación de los campos
+  if (!evento || !usuario) {
+    return response.error(req, res, 400, 'Todos los campos son obligatorios');
+  }
+
+  const newAsistencia = new Asistencia(asistencias.length + 1, evento, usuario, new Date());
+  asistencias.push(newAsistencia);
+
+  // Respuesta exitosa
+  response.success(req, res, 201, 'Usuario Correcto');
 });
 
 module.exports = router;
