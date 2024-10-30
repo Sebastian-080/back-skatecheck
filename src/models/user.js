@@ -1,11 +1,13 @@
   
 const { DataTypes } = require('sequelize');
-const sequelize = require('../db');
+const sequelize = require('../util/db');
 
 const User = sequelize.define('user', {
   id: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    primaryKey: true,
+    autoIncrement: true
   },
   nombre: {
     type: DataTypes.STRING,
@@ -36,6 +38,9 @@ const User = sequelize.define('user', {
     allowNull: false,
     unique: true
   }
+}, {
+  tableName: 'user', // Especifica el nombre exacto de la tabla
+  timestamps: false   // Desactiva createdAt y updatedAt ya que son agregados automaticamente por el ORM
 });
 
 module.exports = User;

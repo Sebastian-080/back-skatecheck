@@ -8,13 +8,6 @@ const Evento = require('../models/evento');
 const sequelize = require('../util/db');
 const Asistencia = require('../models/asistencia');
 
-// Simular una base de datos en memoria
-const users = [];
-let newUser = new User(users.length + 1, "Pepito", "pepite@test.com");
-users.push(newUser);
-newUser = new User(users.length + 1, "Tester", "tester@test.com");
-users.push(newUser);
-
 const contactos = [];
 
 const eventos = [];
@@ -27,6 +20,43 @@ eventos.push(newEvento);
 
 const asistencias = [];
 
+// Ruta para obtener un usuario por ID
+router.get('/user', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findAll();
+
+    if (user.length === 0) {
+      return response.success(req, res, 200, 'No se encontraron usuarios', []);
+    }
+
+    res.body = user;
+    response.success(req, res, 200, 'Usuarios obtenidos exitosamente', user);
+  } catch (error) {
+    response.error(req, res, 500, 'Error al obtener los usuarios');
+  }
+});
+
+// Ruta para obtener un usuario por ID
+router.get('/user/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      return response.error(req, res, 404, 'Usuario no encontrado');
+    }
+
+    res.body = user;
+    response.success(req, res, 200, 'Usuario encontrado', user);
+  } catch (error) {
+    response.error(req, res, 500, 'Error al obtener el usuario');
+  }
+});
+
+
 // Ruta para agregar un nuevo usuario
 router.post('/user/register', async (req, res) => {
   const { nombre, correo, telefono, direccion, usuario, pass } = req.body;
@@ -38,17 +68,16 @@ router.post('/user/register', async (req, res) => {
 
   try {
     const user = await User.create(req.body);
-    res.status(201).json(user);
+    res.body = user;
+    // Respuesta exitosa
+    response.success(req, res, 201, 'Usuario creado exitosamente');
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 
-  // Respuesta exitosa
-  response.success(req, res, 201, 'Usuario creado exitosamente');
 });
 
-// Ruta para loguear un usuario
-router.post('/user/login', (req, res) => {
+router.post('/user/login', async (req, res) => {
   const { usuario, pass } = req.body;
 
   // Validación de los campos
@@ -56,11 +85,28 @@ router.post('/user/login', (req, res) => {
     return response.error(req, res, 400, 'Todos los campos son obligatorios');
   }
 
-  // Respuesta exitosa
-  response.success(req, res, 201, 'Usuario Correcto');
+  try {
+    const user = await User.findOne({
+      where: {
+        usuario: usuario,
+        pass: pass
+      }
+    });
+
+    if (!user) {
+      return response.error(req, res, 404, 'Usuario no encontrado');
+    }
+
+    res.body = user;
+    response.success(req, res, 200, 'Usuario encontrado', user);
+  } catch (error) {
+    response.error(req, res, 500, 'Error al obtener el usuario');
+  }
 });
 
-// Ruta para loguear un usuario
+
+
+
 router.post('/set-contacto', (req, res) => {
   const { usuario, correo, descripcion } = req.body;
 
@@ -76,7 +122,7 @@ router.post('/set-contacto', (req, res) => {
   response.success(req, res, 201, 'Exitoso');
 });
 
-// Ruta para loguear un usuario
+
 router.get('/get-contacto', (req, res) => {
 
   // Respuesta exitosa
@@ -84,7 +130,7 @@ router.get('/get-contacto', (req, res) => {
   response.success(req, res, 201, 'Exitoso');
 });
 
-// Ruta para loguear un usuario
+
 router.get('/evento/all', (req, res) => {
 
   // Respuesta exitosa
@@ -92,15 +138,8 @@ router.get('/evento/all', (req, res) => {
   response.success(req, res, 201, 'Exitoso');
 });
 
-// Ruta para loguear un usuario
-router.get('/user/all', (req, res) => {
 
-  // Respuesta exitosa
-  res.body = users;
-  response.success(req, res, 201, 'Exitoso');
-});
 
-// Ruta para loguear un usuario
 router.get('/evento/asistencia/all', (req, res) => {
 
   // Respuesta exitosa
@@ -108,7 +147,6 @@ router.get('/evento/asistencia/all', (req, res) => {
   response.success(req, res, 201, 'Exitoso');
 });
 
-// Ruta para loguear un usuario
 router.post('/evento/asistencia/create', (req, res) => {
   const { evento, usuario } = req.body;
 
