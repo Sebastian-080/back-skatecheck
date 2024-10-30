@@ -5,6 +5,7 @@ const User = require('../models/user');
 const response = require('../util/response'); // Importamos el manejador de respuestas
 const Contacto = require('../models/contacto');
 const Evento = require('../models/evento');
+const sequelize = require('../util/db');
 const Asistencia = require('../models/asistencia');
 
 // Simular una base de datos en memoria
@@ -27,7 +28,7 @@ eventos.push(newEvento);
 const asistencias = [];
 
 // Ruta para agregar un nuevo usuario
-router.post('/user/register', (req, res) => {
+router.post('/user/register', async (req, res) => {
   const { nombre, correo, telefono, direccion, usuario, pass } = req.body;
 
   // Validación de los campos
@@ -35,8 +36,12 @@ router.post('/user/register', (req, res) => {
     return response.error(req, res, 400, 'Todos los campos son obligatorios');
   }
 
-  const newUser = new User(users.length + 1, nombre, correo, telefono, direccion, usuario, pass);
-  users.push(newUser);
+  try {
+    const user = await User.create(req.body);
+    res.status(201).json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 
   // Respuesta exitosa
   response.success(req, res, 201, 'Usuario creado exitosamente');
