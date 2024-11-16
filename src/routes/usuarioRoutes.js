@@ -8,7 +8,13 @@ const Estudiante = require('../models/estudiante');  // Asumiendo que tienes el 
 // Ruta para obtener un usuario por ID
 router.get('/user', async (req, res) => {
   try {
-    const user = await Usuario.findAll();
+    const user = await Usuario.findAll({
+      where: { perfil_id: 3 },  // Filtra por el perfil_id
+      include: {
+        model: Estudiante,  // Incluir los estudiantes relacionados
+        required: false     // Puedes poner `true` para hacer un INNER JOIN
+      }
+    });
 
     if (user.length === 0) {
       return response.success(req, res, 200, 'No se encontraron usuarios', []);
